@@ -13,5 +13,6 @@ namespace Games
 		IDeck Deck { get; set; }
 
 		void Deal();
+		void Play();
 	}
 }

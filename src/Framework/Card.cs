@@ -18,5 +18,11 @@ namespace Framework
 		{
 			return this.ShortText.ToString() + this.Suit.ToString();
 		}
+
+		public int CompareTo(object obj)
+		{
+			Card card2 = (Card)obj;
+			return this.Value.CompareTo(card2.Value);
+		}
 	}
 }

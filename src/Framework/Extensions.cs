@@ -18,6 +18,28 @@ namespace Framework
 				list[n] = value;
 			}
 		}
+
+		public static T Next<T>(this IList<T> list)
+		{
+			if (list.Count > 0)
+			{
+				T card = list[0];
+				list.RemoveAt(0);
+				return card;
+			}
+			else
+			{
+				return default(T);    //deck is empty
+			}
+		}
+
+		public static void ShowCards(this IList<Card> list)
+		{
+			for (int i = 0; i < list.Count; i++)
+			{
+				Console.WriteLine(list[i].ToString());
+			}
+		}
 	}
 
 	public static class ThreadSafeRandom

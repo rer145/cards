@@ -19,6 +19,11 @@ namespace Framework
 			this.Cards.Shuffle();
 		}
 
+		public Card Next()
+		{
+			return this.Cards.Next();
+		}
+
 		public override string ToString()
 		{
 			StringBuilder output = new StringBuilder();
