@@ -7,9 +7,7 @@ namespace Games
 {
 	public interface IGame
 	{
-		int Players { get; set; }
-		Dictionary<int, List<Card>> PlayerCardsHeld { get; set; }
-		Dictionary<int, List<Card>> PlayerCardsDown { get; set; }
+		List<Player> Players { get; set; }
 		IDeck Deck { get; set; }
 
 		void Deal();

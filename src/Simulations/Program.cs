@@ -16,10 +16,10 @@ namespace Simulations
 			war.Deck.Shuffle();
 			war.Deal();
 
-			for (int i = 0; i < war.Players; i++)
+			for (int i = 0; i < war.Players.Count; i++)
 			{
 				Console.WriteLine("Player " + i + " Cards:");
-				war.PlayerCardsHeld[i].ShowCards();
+				war.Players[i].Hand.ShowCards();
 				Console.WriteLine("-----------------");
 			}
 
