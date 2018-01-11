@@ -33,6 +33,11 @@ namespace Framework
 			}
 		}
 
+		public static T Peek<T>(this IList<T> list)
+		{
+			return list.Count > 0 ? list[0] : default(T);
+		}
+
 		public static void ShowCards(this IList<Card> list)
 		{
 			for (int i = 0; i < list.Count; i++)

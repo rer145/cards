@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Framework
 {
-    public class Card
+    public class Card : IComparable
     {
         public int Value { get; set; }
         public string ShortText { get; set; }

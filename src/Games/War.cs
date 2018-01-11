@@ -38,95 +38,131 @@ namespace Games
 
 		public void Play()
 		{
-			bool done = false;
+			bool isGameOver = false;
+			
+			List<Card> cardsInPlay = new List<Card>();
+			List<Player> playersInPlay = new List<Player>();
 
-			int winner = -1;
-			Dictionary<int, Card> currentCards = new Dictionary<int, Card>();
-			int roundWinner = -1;
-			Card highCard = new Card();
-
-			while (!done)
+			int rounds = 0;
+			
+			while (!isGameOver)
 			{
-				currentCards.Clear();
-				
-				//pull in cards for all available players
-				for (int i = 0; i < this.Players.Count; i++)
+				if (rounds > 10)
 				{
-					//only if the player has cards left
-					if (this.Players[i].Hand.Count > 0)
-					{
-						currentCards.Add(i, this.Players[i].Hand.Next());
-					}
+					isGameOver = true;
 				}
-
-				if (currentCards.Count > 0)
+				else
 				{
-					//roundWinner = currentCards.First().Key;
-					//highCard = currentCards.First().Value;
-					roundWinner = -1;
-					highCard = new Card();
+					cardsInPlay.Clear();
+					playersInPlay.Clear();
 
-					//compare each card to find round winner
-					//check for ties
-					foreach (int j in currentCards.Keys)
+					//pull in cards for all available players
+					foreach (Player player in this.Players)
 					{
-						Console.WriteLine("Player {0}: {1}", j, currentCards[j]);
-						if (currentCards[j].CompareTo(highCard) > 0)
+						//only if the player has cards left
+						if (player.Hand.Count > 0)
 						{
-							highCard = currentCards[j];
-							roundWinner = j;
-						}
-						else if (currentCards[j].CompareTo(highCard) == 0)
-						{
-							//do nothing for now
-							roundWinner = -1;
-							//call Next for each player
-							//call Next for each player again and compare those cards
-							//continue until not equal
+							//currentCards.Add(i, this.Players[i].Hand.Next());
+							cardsInPlay.Add(player.Hand.Next());
+							playersInPlay.Add(player);
 						}
 					}
 
-					//add cards to winner's hand
-					if (roundWinner >= 0)
+					if (cardsInPlay.Count > 1)
 					{
-						foreach (int j in currentCards.Keys)
+						WarRoundResult result = new WarRoundResult(playersInPlay, cardsInPlay);
+						if (result.IsWar)
 						{
-							this.Players[roundWinner].Hand.Add(currentCards[j]);
+							Console.WriteLine("WAR");
+						}
+						else
+						{
+							//give winning player all the cards in play
+							foreach (Card card in cardsInPlay)
+							{
+								this.Players.Where(x => x.Id == result.WinningPlayer.Id).FirstOrDefault().Hand.Add(card);
+							}
 						}
 					}
 					else
 					{
-						foreach (int j in currentCards.Keys)
-						{
-							this.Players[j].Hand.Add(currentCards[j]);
-						}
+						isGameOver = true;
 					}
-
-					Console.WriteLine("Winning Card: {0}", highCard.ToString());
-					Console.WriteLine("Winner: {0}", roundWinner);
-					Console.WriteLine("Card Counts: ");
-					for (int i = 0; i < this.Players.Count; i++)
-					{
-						Console.WriteLine("  Player {0}: {1}", i, this.Players[i].Hand.Count);
-
-						if (this.Players[i].Hand.Count < 23)
-						{
-							done = true;
-							break;
-						}
-					}
+					rounds++;
 				}
-				else
-				{
-					done = true;
-				}
-
-
-
-				//done = true;
 			}
 
-			Console.WriteLine("Game is completed. Winner is player " + winner);
+			Console.WriteLine("Game is completed. Winner is your mom");
+		}
+	}
+
+	public class WarRoundResult
+	{
+		public bool IsWar { get; set; }
+		public List<Card> Cards { get; set; }
+		public List<Player> Players { get; set; }
+		public Player WinningPlayer { get; set; }
+		public Card WinningCard { get; set; }
+		public List<Player> WarPlayers { get; set; }
+		public List<Card> WarCards { get; set; }
+
+		public WarRoundResult(List<Player> players, List<Card> cards)
+		{
+			this.Players = players;
+			this.Cards = cards;
+
+			this.IsWar = false;
+			this.WinningCard = null;
+			this.WinningPlayer = null;
+			this.WarCards = new List<Card>();
+			this.WarPlayers = new List<Player>();
+
+			this.GetResult();
+		}
+
+		public void GetResult()
+		{
+			this.Cards.Sort();
+
+			Card highCard = this.Cards.Next();
+			Card tempCard = this.Cards.Next();
+			while (highCard.Value == tempCard.Value)
+			{
+				this.WarCards.Add(tempCard);
+			}
+
+			if (this.WarCards.Count > 0)
+			{
+				this.WarCards.Add(highCard);
+				this.IsWar = true;
+			}
+			else
+			{
+				this.IsWar = false;
+				this.WinningCard = highCard;
+				foreach (Player player in this.Players)
+				{
+					if (player.Hand.Contains(highCard))
+					{
+						this.WinningPlayer = player;
+					}
+				}
+			}
+
+			if (this.IsWar)
+			{
+				//get players involved in war
+				foreach (Player player in this.Players)
+				{
+					foreach (Card card in this.WarCards)
+					{
+						if (player.Hand.Contains(card))
+						{
+							this.WarPlayers.Add(player);
+						}
+					}
+				}
+			}
 		}
 	}
 }
